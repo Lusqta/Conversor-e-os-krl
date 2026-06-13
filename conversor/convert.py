@@ -2,7 +2,6 @@
 import os
 import sys
 import json
-import shlex
 import subprocess
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -65,6 +64,14 @@ def escape_ffmetadata_value(val: str) -> str:
     val = val.replace('#', '\\#')
     val = val.replace('\n', '\\\n')
     return val
+
+def read_lrc_file(lrc_path: Path) -> str:
+    try:
+        with open(lrc_path, 'r', encoding='utf-8-sig') as lf:
+            return lf.read()
+    except UnicodeDecodeError:
+        with open(lrc_path, 'r', encoding='cp1252', errors='replace') as lf:
+            return lf.read()
 
 class APIHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -291,13 +298,7 @@ def run_batch_async(input_path: Path, output_dir: Path):
                 lrc_path = file_path.with_suffix('.lrc')
                 if lrc_path.exists():
                     try:
-                        try:
-                            with open(lrc_path, 'r', encoding='utf-8-sig') as lf:
-                                lrc_text = lf.read()
-                        except UnicodeDecodeError:
-                            with open(lrc_path, 'r', encoding='cp1252', errors='replace') as lf:
-                                lrc_text = lf.read()
-                        
+                        lrc_text = read_lrc_file(lrc_path)
                         escaped_lyrics = escape_ffmetadata_value(lrc_text)
                         meta_content += f"LYRICS={escaped_lyrics}\n"
                     except Exception as le:
@@ -347,12 +348,7 @@ def run_batch_async(input_path: Path, output_dir: Path):
                 lrc_path = file_path.with_suffix('.lrc')
                 if lrc_path.exists():
                     try:
-                        try:
-                            with open(lrc_path, 'r', encoding='utf-8-sig') as lf:
-                                lrc_content = lf.read()
-                        except UnicodeDecodeError:
-                            with open(lrc_path, 'r', encoding='cp1252', errors='replace') as lf:
-                                lrc_content = lf.read()
+                        lrc_content = read_lrc_file(lrc_path)
                         cmd.insert(-1, "-metadata")
                         cmd.insert(-1, f"LYRICS={lrc_content}")
                     except Exception as le:

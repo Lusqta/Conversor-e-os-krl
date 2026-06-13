@@ -1,5 +1,4 @@
 # Configurações do Conversor FLAC para Opus
-import os
 import json
 from pathlib import Path
 

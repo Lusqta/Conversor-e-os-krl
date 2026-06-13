@@ -25,3 +25,8 @@ dist-ssr
 
 # Agentic skills
 antigravity-awesome-skills/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
