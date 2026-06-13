@@ -1,0 +1,12 @@
+{
+    "BITRATE": "192k",
+    "SAMPLERATE": 48000,
+    "CHANNELS": 2,
+    "MAX_WORKERS": 4,
+    "OUTPUT_EXT": ".opus",
+    "FFMPEG_BIN": "ffmpeg",
+    "FFPROBE_BIN": "ffprobe",
+    "PORT": 8000,
+    "INPUT_DIR": "C:\\Users\\Denison\\Downloads\\Lucas\\pastacommusica",
+    "OUTPUT_DIR": "C:\\Users\\Denison\\Downloads\\Lucas\\pastacommusica\\asconvertida"
+}

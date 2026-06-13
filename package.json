@@ -1,0 +1,20 @@
+{
+  "name": "converter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/jszip": "^3.4.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  },
+  "dependencies": {
+    "@audio/encode-opus": "^1.0.2",
+    "jszip": "^3.10.1"
+  }
+}

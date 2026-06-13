@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Embuta e extraia letras .lrc em arquivos .flac diretamente no navegador. 100% client-side." />
+  <title>FLAC Lyrics Embedder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== CONTROLES SUPERIORES ===== -->
+  <div class="header-controls">
+    <!-- Seletor de Paleta Neumórfico -->
+    <div class="palette-selector-container">
+      <button id="paletteToggle" class="palette-toggle" aria-label="Alterar paleta de cores" title="Alterar paleta">
+        <span id="currentPaletteLabel">Argila</span>
+      </button>
+      <div id="paletteMenu" class="palette-menu hidden">
+        <button class="palette-option" data-palette="clay">Argila</button>
+        <button class="palette-option" data-palette="sand">Areia</button>
+        <button class="palette-option" data-palette="stone">Pedra</button>
+        <button class="palette-option" data-palette="onyx">Ônix</button>
+        <button class="palette-option" data-palette="neon">Neon</button>
+        <button class="palette-option" data-palette="earth">Terroso</button>
+      </div>
+    </div>
+
+    <!-- Seletor de Álbum Neumórfico -->
+    <div class="album-selector-container">
+      <button id="albumToggle" class="album-toggle" aria-label="Alterar estilo de álbum" title="Alterar estilo">
+        <span id="currentAlbumLabel">Coleção</span>
+      </button>
+      <div id="albumMenu" class="album-menu hidden">
+        <button class="album-option" data-album="y2004">2004</button>
+        <button class="album-option" data-album="y2005">2005</button>
+        <button class="album-option" data-album="y2007">2007</button>
+        <button class="album-option" data-album="y2008">2008</button>
+        <button class="album-option" data-album="y2010">2010</button>
+        <button class="album-option" data-album="y2011">2011</button>
+        <button class="album-option" data-album="y2013">2013</button>
+        <button class="album-option" data-album="y2016">2016</button>
+        <button class="album-option" data-album="y2018a">2018a</button>
+        <button class="album-option" data-album="y2018b">2018b</button>
+        <button class="album-option" data-album="y2019">2019</button>
+        <button class="album-option" data-album="y2021">2021</button>
+        <button class="album-option" data-album="y2024a">2024a</button>
+        <button class="album-option" data-album="y2024b">2024b</button>
+      </div>
+    </div>
+
+    <!-- Seletor de Idioma Neumórfico -->
+    <div class="lang-selector-container">
+      <button id="langToggle" class="lang-toggle" aria-label="Alterar idioma" title="Alterar idioma">
+        <span id="currentLangLabel">PT</span>
+      </button>
+      <div id="langMenu" class="lang-menu hidden">
+        <button class="lang-option" data-lang="pt-BR">Português (PT)</button>
+        <button class="lang-option" data-lang="en">English (EN)</button>
+        <button class="lang-option" data-lang="hi">हिन्दी (HI)</button>
+        <button class="lang-option" data-lang="ar">العربية (AR)</button>
+        <button class="lang-option" data-lang="zh">中文 (ZH)</button>
+      </div>
+    </div>
+
+    <!-- Alternador de Tema Neumórfico -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Alternar modo escuro e claro" title="Alternar tema">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path id="themeSun" d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        <path id="themeMoon" class="hidden" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg class="logo-vinyl" viewBox="0 0 100 100" width="24" height="24" fill="none" stroke="currentColor" stroke-width="6">
+          <circle cx="50" cy="50" r="40" stroke-width="8" opacity="0.9" />
+          <circle cx="50" cy="50" r="28" stroke-width="4" opacity="0.6" />
+          <circle cx="50" cy="50" r="16" stroke-width="2" opacity="0.4" />
+          <circle cx="50" cy="50" r="6" fill="currentColor" stroke="none" />
+        </svg>
+      </div>
+      <h1>FLAC Lyrics Embedder</h1>
+    </div>
+    <p class="subtitle" id="headerSubtitle">Arraste seus <code>.flac</code> e <code>.lrc</code> — tudo roda 100% no navegador.</p>
+    <div class="header-link-container">
+      <a href="https://squid.wtf/" target="_blank" rel="noopener" class="btn btn-sm btn-ghost header-link-btn">
+        <span>Site pra baixar música</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ===== MODE TABS ===== -->
+  <nav class="mode-tabs" id="modeTabs" data-active="embed">
+    <div class="mode-tab-indicator" id="modeTabIndicator"></div>
+    <button class="mode-tab active" data-mode="embed">Embutir Letras</button>
+    <button class="mode-tab" data-mode="extract">Extrair Letras</button>
+    <button class="mode-tab" data-mode="verify">Verificar Letras (LRCLIB)</button>
+  </nav>
+
+  <!-- ===== DROPZONE ===== -->
+  <div id="dropzone" class="dropzone">
+    <div class="dropzone-content">
+      <div class="dropzone-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <p class="dropzone-text" id="dropText">Arraste e solte seus arquivos aqui</p>
+      <p class="dropzone-hint" id="dropHint">ou clique para selecionar</p>
+      <div class="dropzone-badges" id="dropBadges">
+        <span class="badge badge-flac">.flac</span>
+        <span class="badge badge-lrc">.lrc</span>
+      </div>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".flac,.lrc" hidden />
+  </div>
+
+  <!-- ===== OPTIONS CARD ===== -->
+  <section class="options-card" id="optionsCard">
+    <h2 class="options-title">Configurações de Saída</h2>
+    
+    <!-- Opção 1: Buscar letras na internet -->
+    <div class="option-row" id="rowFetchLrc">
+      <div class="option-info">
+        <label for="optFetchLrc" class="option-label">Buscar letras automaticamente (LRCLIB)</label>
+        <p class="option-desc">Busca letras sincronizadas na internet caso não haja um arquivo .lrc local correspondente.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="optFetchLrc" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    
+    <!-- Opção 2: Embutir letras no áudio -->
+    <div class="option-row" id="rowEmbedLrc">
+      <div class="option-info">
+        <label for="optEmbedLrc" class="option-label">Embutir letras no arquivo de áudio</label>
+        <p class="option-desc">Grava as letras diretamente no arquivo final. Se desmarcado, gera um arquivo .lrc separado.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="optEmbedLrc" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Opção 3: Converter para .opus -->
+    <div class="option-row" id="rowConvertOpus">
+      <div class="option-info">
+        <label for="optConvertOpus" class="option-label">Converter para .opus</label>
+        <p class="option-desc">Gera o arquivo final no formato comprimido Opus (16-bit, 48kHz, 192kbps) com metadados em vez de FLAC.</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="optConvertOpus" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Seção: Opções do Conversor Local (oculta por padrão) -->
+    <div id="opusEngineSection" class="option-sub-section hidden" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+      <div class="meta-field">
+        <label class="meta-label" id="lblLocalInputDir">Caminho da Pasta de Entrada (com arquivos FLAC)</label>
+        <input type="text" id="localInputDir" class="meta-input" placeholder="Ex: C:\Musicas\FLAC" />
+      </div>
+      <div class="meta-field">
+        <label class="meta-label" id="lblLocalOutputDir">Caminho da Pasta de Saída (opcional)</label>
+        <input type="text" id="localOutputDir" class="meta-input" placeholder="Deixe em branco para salvar na pasta 'converted'" />
+      </div>
+      <div id="localServerStatus" class="lrc-encoding-warn" style="margin-top: 4px; font-weight: 600; color: var(--warn); display: flex; align-items: center; gap: 6px;">
+        <span>Conectando ao servidor local...</span>
+      </div>
+      <button class="btn btn-primary" id="btnStartLocalBatch" style="margin-top: 12px; width: 100%;">Iniciar Conversão em Lote</button>
+    </div>
+  </section>
+
+  <!-- ===== STATS BAR ===== -->
+  <div id="statsBar" class="stats-bar hidden">
+    <div class="stat"><span class="stat-value" id="sFlac">0</span><span class="stat-label">FLAC</span></div>
+    <div class="stat"><span class="stat-value" id="sLrc">0</span><span class="stat-label">LRC</span></div>
+    <div class="stat"><span class="stat-value" id="sPaired">0</span><span class="stat-label">Pareados</span></div>
+    <div class="stat"><span class="stat-value" id="sOrphan">0</span><span class="stat-label">Sem par</span></div>
+  </div>
+
+  <!-- ===== FILE PAIR LIST ===== -->
+  <div id="pairList" class="pair-list hidden"></div>
+
+  <!-- ===== VERIFY LIST ===== -->
+  <div id="verifyList" class="verify-list hidden"></div>
+
+  <!-- ===== ACTIONS ===== -->
+  <div id="actions" class="actions hidden"></div>
+
+  <!-- ===== PROGRESS ===== -->
+  <div id="progressSection" class="progress-section hidden" style="padding: 16px; margin-top: 15px; border-radius: var(--r-md); box-shadow: var(--nm-in-md);">
+    <div class="progress-header-info" style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.92rem; margin-bottom: 6px; color: var(--text);">
+      <span id="progressText">Processando...</span>
+      <span id="progressPercent">0%</span>
+    </div>
+    <div class="progress-bar" style="height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; margin-bottom: 12px; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.15);"><div id="progressFill" class="progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--ac), var(--ac-hover)); transition: width 0.3s ease;"></div></div>
+    
+    <div class="progress-details" style="display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-dim);">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Faixa Atual: <span id="progressCurrentFile" style="font-weight: 500; color: var(--text);">Nenhuma</span></span>
+        <span>Concluído: <span id="progressCountText" style="font-weight: 500; color: var(--text);">0 / 0</span></span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>Restantes: <span id="progressRemainingText" style="font-weight: 500; color: var(--text);">0</span></span>
+        <span>Erros: <span id="progressErrorsText" style="font-weight: 500; color: var(--err);">0</span></span>
+      </div>
+      <div id="progressLastLog" style="border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-dim); font-size: 0.75rem;">
+        Aguardando início...
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOG PANEL ===== -->
+  <div id="logPanel" class="log-panel hidden">
+    <div class="log-header">
+      <button class="log-toggle" id="logToggle">
+        <span>Log de Operações (<span id="logCount">0</span> entradas)</span>
+        <span class="chevron">▼</span>
+      </button>
+      <button class="btn btn-sm btn-ghost" id="btnClearLogs" style="border-radius:var(--r-sm); padding:4px 10px; font-size:0.72rem; box-shadow:var(--nm-out-sm); margin-left:auto; flex-shrink:0;">Limpar</button>
+    </div>
+    <div class="log-entries" id="logEntries">
+      <div class="log-entries-inner" id="logInner"></div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div id="results" class="results-card hidden"></div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p id="footerText">Tudo roda localmente no seu navegador — nenhum arquivo é enviado a servidores.</p>
+  </footer>
+
+</div>
+
+<!-- Vincular o módulo JS TypeScript principal -->
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
