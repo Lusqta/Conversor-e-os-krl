@@ -8,6 +8,27 @@ O sistema foi arquitetado utilizando duas engines independentes e complementares
 
 ---
 
+## 🎨 Interface e Paletas de Cores
+
+O aplicativo possui uma interface visual premium e responsiva construída em **Neumorfismo (Soft UI)**, oferecendo suporte nativo para múltiplos esquemas de cores e temas estilizados inspirados em diferentes eras e paletas conceituais:
+
+### 🔴 Yeezus (Paleta Vermelha)
+![Yeezus](screenshots/y2013.png)
+
+### ⛰️ Pedra (Paleta Cinza)
+![Pedra](screenshots/stone.png)
+
+### 🌅 Kids See Ghosts (Paleta Areia/Peach)
+![Kids See Ghosts](screenshots/y2018b.png)
+
+### 🔵 Jesus Is King (Paleta Azul)
+![Jesus Is King](screenshots/y2019.png)
+
+### 🕶️ Onyx (Dark Mode)
+![Onyx](screenshots/dark.png)
+
+---
+
 ## 📂 Estrutura do Projeto
 
 O código-fonte é organizado nos seguintes módulos e componentes principais:
